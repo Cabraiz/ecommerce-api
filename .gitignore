@@ -1,0 +1,19 @@
+# IDEs (ainda pode ignorar)
+.idea/
+.vscode/
+*.iml
+
+# OS junk files
+.DS_Store
+Thumbs.db
+
+# Gradle - manter o wrapper completo e o cache
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# ⚠️ MANTER build e .gradle no repositório para rodar offline
+# Portanto, NÃO ignore build/ e .gradle/
+
+# Se quiser, pode apenas comentar em vez de apagar:
+# build/
+# .gradle/
