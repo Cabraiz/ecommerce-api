@@ -13,11 +13,12 @@ WORKDIR /app
 # Copia o JAR já pronto
 COPY build/libs/*.jar app.jar
 
-# Avisa ao Railway que a porta vem da variável PORT
+# Define variáveis de ambiente
 ENV PORT=8080
+ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 
-# Muda a porta de escuta para a variável
+# Expõe a porta
 EXPOSE 8080
 
-# Rodar o jar
+# Roda o jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
