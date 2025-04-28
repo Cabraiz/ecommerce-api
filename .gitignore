@@ -17,4 +17,3 @@ Thumbs.db
 # Se quiser, pode apenas comentar em vez de apagar:
 # build/
 # .gradle/
-src/main/resources/application.properties
