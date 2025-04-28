@@ -1,26 +1,19 @@
-# Etapa 1 - (opcional) Build no Docker
-# FROM gradle:8.6-jdk17 AS build
-# COPY --chown=gradle:gradle . /home/gradle/src
-# WORKDIR /home/gradle/src
-# RUN gradle build --no-daemon
-
-# Etapa 2 - Runtime (produção)
+# Base
 FROM eclipse-temurin:17-jdk-jammy
 
-# Define a pasta do app
+# Pasta do app
 WORKDIR /app
 
-# Copia o JAR já construído
+# Copia o jar
 COPY build/libs/*.jar app.jar
 
-# Define a porta como variável de ambiente
+# Variáveis de ambiente
 ENV PORT=8080
-
-# Define opções de memória e GC mais leves
+ENV SPRING_PROFILES_ACTIVE=prod
 ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -Xms32m -Xmx128m -XX:+UseSerialGC"
 
-# Expõe a porta (Docker)
+# Expor a porta
 EXPOSE 8080
 
-# Comando para rodar a aplicação
+# Rodar
 ENTRYPOINT ["java", "-jar", "app.jar"]
