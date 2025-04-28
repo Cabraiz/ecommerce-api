@@ -9,7 +9,6 @@ COPY build/libs/*.jar app.jar
 
 # Variáveis de ambiente
 ENV PORT=8080
-ENV SPRING_PROFILES_ACTIVE=prod
 ENV JAVA_TOOL_OPTIONS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=50.0 -Xms32m -Xmx128m -XX:+UseSerialGC"
 
 # Expor a porta
