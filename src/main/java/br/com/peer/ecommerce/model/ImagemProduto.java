@@ -14,8 +14,12 @@ public class ImagemProduto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String url;
-
     @Column(name = "produto_id")
     private Long produtoId;
+
+    @Column(name = "dados")
+    private byte[] dados;
+
+    @Column(name = "tipo")
+    private String tipo;
 }

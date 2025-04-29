@@ -23,9 +23,10 @@ cd ecommerce
 
 #### 💻 No Windows:
 
-gradlew.bat clean --offline
-gradlew.bat build --offline
-gradlew.bat bootRun --offline
+.\gradlew.bat clean --offline
+.\gradlew.bat build --offline
+.\gradlew.bat bootRun --offline
+.\gradlew.bat clean --offline; .\gradlew.bat build --offline; .\gradlew.bat bootRun --offline
 
 #### 💻 No Linux/macOS:
 
