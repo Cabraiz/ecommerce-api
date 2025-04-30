@@ -5,6 +5,8 @@ import br.com.peer.ecommerce.service.EstoqueService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/estoque")
 public class EstoqueController {
@@ -16,13 +18,13 @@ public class EstoqueController {
     }
 
     @PostMapping("/reduzir")
-    public ResponseEntity<?> reduzirEstoque(@RequestBody ReduzirEstoqueDTO dto) {
-        boolean sucesso = estoqueService.reduzirEstoque(dto.getVariacaoId(), dto.getTamanho(), dto.getQuantidade());
-
-        if (sucesso) {
-            return ResponseEntity.ok("Estoque reduzido com sucesso.");
-        } else {
-            return ResponseEntity.badRequest().body("Estoque insuficiente ou variação não encontrada.");
+    public ResponseEntity<?> reduzirEstoque(@RequestBody List<ReduzirEstoqueDTO> pedidos) {
+        for (ReduzirEstoqueDTO dto : pedidos) {
+            boolean sucesso = estoqueService.reduzirEstoque(dto.getVariacaoId(), dto.getTamanho(), dto.getQuantidade());
+            if (!sucesso) {
+                return ResponseEntity.badRequest().body("Erro ao reduzir estoque da variação ID " + dto.getVariacaoId() + ", tamanho " + dto.getTamanho());
+            }
         }
+        return ResponseEntity.ok("Todos os estoques foram reduzidos com sucesso.");
     }
 }
