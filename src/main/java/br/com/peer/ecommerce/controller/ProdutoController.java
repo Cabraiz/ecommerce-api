@@ -38,4 +38,10 @@ public class ProdutoController {
     public void deletar(@PathVariable Long id) {
         service.deletar(id);
     }
+
+    @Operation(summary = "Conta quantos produtos estão ativos")
+    @GetMapping("/ativos/quantidade")
+    public long contarAtivos() {
+        return service.contarProdutosAtivos();
+    }
 }

@@ -34,9 +34,13 @@ public class ProdutoService {
         repository.deleteById(id);
     }
 
-    // ✅ Novo método para entregar os dados no formato do frontend
+    public long contarProdutosAtivos() {
+        return repository.countByAtivoTrue();
+    }
+
+    // ✅ Agora lista apenas produtos ATIVOS
     public List<ProdutoDTO> listarComImagem() {
-        return repository.findAll().stream().map(produto -> {
+        return repository.findAllByAtivoTrue().stream().map(produto -> {
             ImagemProduto imagem = imagemRepository.findFirstByProdutoId(produto.getId());
             String imagemBase64 = null;
             if (imagem != null && imagem.getDados() != null) {
