@@ -1,5 +1,6 @@
 package br.com.peer.ecommerce.controller;
 
+import br.com.peer.ecommerce.dto.ProdutoDTO;
 import br.com.peer.ecommerce.model.Produto;
 import br.com.peer.ecommerce.service.ProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,10 +20,11 @@ public class ProdutoController {
         this.service = service;
     }
 
-    @Operation(summary = "Lista todos os produtos")
+    // ✅ Agora retorna DTOs com imagem base64
+    @Operation(summary = "Lista todos os produtos com imagem em base64 (frontend)")
     @GetMapping
-    public List<Produto> listar() {
-        return service.listar();
+    public List<ProdutoDTO> listar() {
+        return service.listarComImagem();
     }
 
     @Operation(summary = "Cadastra um novo produto")
