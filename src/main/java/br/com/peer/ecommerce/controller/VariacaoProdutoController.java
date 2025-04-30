@@ -1,5 +1,6 @@
 package br.com.peer.ecommerce.controller;
 
+import br.com.peer.ecommerce.dto.VariacaoComTamanhosDTO;
 import br.com.peer.ecommerce.model.VariacaoProduto;
 import br.com.peer.ecommerce.service.VariacaoProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,5 +36,12 @@ public class VariacaoProdutoController {
     @DeleteMapping("/{id}")
     public void deletar(@PathVariable Long id) {
         service.deletar(id);
+    }
+
+    // ✅ NOVO: lista variações com tamanhos
+    @Operation(summary = "Lista variações de produto com seus tamanhos e estoques")
+    @GetMapping("/com-tamanhos")
+    public List<VariacaoComTamanhosDTO> listarComTamanhos() {
+        return service.listarComTamanhos();
     }
 }
