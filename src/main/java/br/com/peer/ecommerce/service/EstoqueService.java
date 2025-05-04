@@ -1,6 +1,7 @@
 package br.com.peer.ecommerce.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.peer.ecommerce.dto.EventoEstoqueDTO;
+import br.com.peer.ecommerce.rabbit.RabbitMQProducer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -8,9 +9,11 @@ import org.springframework.stereotype.Service;
 public class EstoqueService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final RabbitMQProducer rabbitMQProducer;
 
-    public EstoqueService(JdbcTemplate jdbcTemplate) {
+    public EstoqueService(JdbcTemplate jdbcTemplate, RabbitMQProducer rabbitMQProducer) {
         this.jdbcTemplate = jdbcTemplate;
+        this.rabbitMQProducer = rabbitMQProducer;
     }
 
     public boolean reduzirEstoque(Long variacaoId, String tamanho, int quantidade) {
@@ -29,6 +32,11 @@ public class EstoqueService {
                 SET estoque = estoque - ?
                 WHERE variacao_id = ? AND tamanho = ?
             """, quantidade, variacaoId, tamanho);
+
+            if (updated > 0) {
+                EventoEstoqueDTO evento = new EventoEstoqueDTO(variacaoId, tamanho, quantidade);
+                rabbitMQProducer.enviarMensagemEstoqueReduzido(evento);
+            }
 
             return updated > 0;
         } catch (Exception e) {
