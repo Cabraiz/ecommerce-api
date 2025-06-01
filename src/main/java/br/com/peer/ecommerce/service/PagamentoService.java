@@ -2,6 +2,8 @@ package br.com.peer.ecommerce.service;
 
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class PagamentoService {
 
@@ -18,29 +20,39 @@ public class PagamentoService {
         return "Pagamento com cartão processado com sucesso!";
     }
 
-    public String gerarPayloadPix(String chavePix, double valor, String descricao) {
+    public String gerarPayloadPix(String chavePix, double valor, String idTransacaoOpcional) {
         String valorFormatado = String.format("%.2f", valor).replace(",", ".");
-        String descricaoLimpa = descricao.replaceAll("[^a-zA-Z0-9\\s]", "").trim();
         String nomeFormatado = NOME_RECEBEDOR.length() > 25 ? NOME_RECEBEDOR.substring(0, 25) : NOME_RECEBEDOR;
+        String cidadeFormatada = CIDADE_RECEBEDOR.length() > 15 ? CIDADE_RECEBEDOR.substring(0, 15) : CIDADE_RECEBEDOR;
 
-        // Campo adicional (62) - Substitui o uso de "***"
-        String campoInfoAdicional = "05" + String.format("%02d", "evHhFaTSaG".length()) + "evHhFaTSaG";
+        // Gera ID transação se não for informado
+        String idTransacao = (idTransacaoOpcional == null || idTransacaoOpcional.isBlank())
+                ? UUID.randomUUID().toString().substring(0, 14)
+                : idTransacaoOpcional;
+
+        // --- Merchant Account Info (campo 26) ---
+        String campo26 = "0014BR.GOV.BCB.PIX" +
+                "01" + String.format("%02d", chavePix.length()) + chavePix;
+        String merchantAccount = "26" + String.format("%02d", campo26.length()) + campo26;
+
+        // --- Adicional (campo 62 com ID) ---
+        String campoInfoAdicional = "05" + String.format("%02d", idTransacao.length()) + idTransacao;
         String campo62 = "62" + String.format("%02d", campoInfoAdicional.length()) + campoInfoAdicional;
 
+        // --- Payload sem CRC ---
         String payloadSemCRC =
                 "000201" +
-                        "26" + String.format("%02d", 14 + chavePix.length()) +
-                        "0014BR.GOV.BCB.PIX" +
-                        "01" + String.format("%02d", chavePix.length()) + chavePix +
+                        merchantAccount +
                         "52040000" +
                         "5303986" +
                         "54" + String.format("%02d", valorFormatado.length()) + valorFormatado +
                         "5802BR" +
                         "59" + String.format("%02d", nomeFormatado.length()) + nomeFormatado +
-                        "60" + String.format("%02d", CIDADE_RECEBEDOR.length()) + CIDADE_RECEBEDOR +
+                        "60" + String.format("%02d", cidadeFormatada.length()) + cidadeFormatada +
                         campo62 +
                         "6304";
 
+        // --- Retorna payload completo com CRC ---
         return payloadSemCRC + calcularCRC16(payloadSemCRC);
     }
 
