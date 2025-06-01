@@ -33,7 +33,6 @@ public class PagamentoService {
                 + "5802BR"
                 + "59" + String.format("%02d", nomeFormatado.length()) + nomeFormatado
                 + "60" + String.format("%02d", CIDADE_RECEBEDOR.length()) + CIDADE_RECEBEDOR
-                + "62070503***"
                 + "6304";
 
         return payloadSemCRC + calcularCRC16(payloadSemCRC);
