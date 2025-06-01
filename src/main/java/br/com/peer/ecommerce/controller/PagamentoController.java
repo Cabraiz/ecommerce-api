@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class PagamentoController {
 
     private final PagamentoService pagamentoService;
-
     private static final String CHAVE_PIX_FIXA = "61070800317";
 
     public PagamentoController(PagamentoService pagamentoService) {
@@ -26,25 +25,25 @@ public class PagamentoController {
     }
 
     @Operation(
-            summary = "Pagamento com Pix",
-            description = "Processa um pagamento utilizando o método Pix.",
+            summary = "Gerar código Pix (payload copia e cola)",
+            description = "Gera apenas o payload Pix EMV para copiar e colar. A chave Pix é fixa no backend.",
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Pagamento via Pix processado com sucesso")
+                    @ApiResponse(responseCode = "200", description = "Payload Pix gerado com sucesso")
             }
     )
     @PostMapping("/pix/payload")
     public ResponseEntity<String> gerarPayloadPix(
             @RequestBody(
-                    description = "Gera apenas o código Pix (não o QR base64)",
+                    description = "Dados para gerar o código Pix EMV (copia e cola)",
                     required = true,
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                        {
-                          "valor": 75.00,
-                          "descricao": "Doação para festa"
-                        }
-                        """)
+                                {
+                                  "valor": 75.00,
+                                  "descricao": "Doação para festa"
+                                }
+                            """)
                     )
             )
             @org.springframework.web.bind.annotation.RequestBody PixQRCodeDTO dto
@@ -54,6 +53,38 @@ public class PagamentoController {
             return ResponseEntity.internalServerError().body("Erro ao gerar código Pix");
         }
         return ResponseEntity.ok(payload);
+    }
+
+    @Operation(
+            summary = "Gerar QR Code Pix (imagem base64)",
+            description = "Gera um QR Code base64 a partir do valor e descrição. A chave Pix é fixa no backend.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "QR Code gerado com sucesso"),
+                    @ApiResponse(responseCode = "500", description = "Erro ao gerar QR Code Pix")
+            }
+    )
+    @PostMapping("/pix/qrcode")
+    public ResponseEntity<String> gerarQRCodePix(
+            @RequestBody(
+                    description = "Informações para gerar o QR Code Pix (imagem base64)",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                {
+                                  "valor": 150.75,
+                                  "descricao": "Pagamento de pedido #12345"
+                                }
+                            """)
+                    )
+            )
+            @org.springframework.web.bind.annotation.RequestBody PixQRCodeDTO dto
+    ) {
+        String base64QrCode = pagamentoService.gerarQRCodePix(CHAVE_PIX_FIXA, dto.getValor(), dto.getDescricao());
+        if (base64QrCode == null) {
+            return ResponseEntity.internalServerError().body("Erro ao gerar QR Code Pix");
+        }
+        return ResponseEntity.ok(base64QrCode);
     }
 
     @Operation(
@@ -71,51 +102,19 @@ public class PagamentoController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                    {
-                      "nomeTitular": "João da Silva",
-                      "numeroCartao": "4111111111111111",
-                      "validade": "12/2027",
-                      "cvv": "123",
-                      "valor": 250.75
-                    }
-                """)
+                                {
+                                  "nomeTitular": "João da Silva",
+                                  "numeroCartao": "4111111111111111",
+                                  "validade": "12/2027",
+                                  "cvv": "123",
+                                  "valor": 250.75
+                                }
+                            """)
                     )
             )
             @org.springframework.web.bind.annotation.RequestBody PagamentoCartaoDTO dto
     ) {
         String resultado = pagamentoService.processarPagamentoCartao();
         return ResponseEntity.ok(resultado);
-    }
-
-    @Operation(
-            summary = "Gerar QR Code para pagamento Pix",
-            description = "Gera um QR Code (imagem base64) a partir de um valor e descrição. A chave Pix é fixa no backend.",
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "QR Code gerado com sucesso"),
-                    @ApiResponse(responseCode = "500", description = "Erro ao gerar QR Code Pix")
-            }
-    )
-    @PostMapping("/pix/qrcode")
-    public ResponseEntity<String> gerarQRCodePix(
-            @RequestBody(
-                    description = "Informações para gerar o QR Code (chave Pix é fixa)",
-                    required = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = @ExampleObject(value = """
-                    {
-                      "valor": 150.75,
-                      "descricao": "Pagamento de pedido #12345"
-                    }
-                """)
-                    )
-            )
-            @org.springframework.web.bind.annotation.RequestBody PixQRCodeDTO dto
-    ) {
-        String base64QrCode = pagamentoService.gerarQRCodePix(CHAVE_PIX_FIXA, dto.getValor(), dto.getDescricao());
-        if (base64QrCode == null) {
-            return ResponseEntity.internalServerError().body("Erro ao gerar QR Code Pix");
-        }
-        return ResponseEntity.ok(base64QrCode);
     }
 }
