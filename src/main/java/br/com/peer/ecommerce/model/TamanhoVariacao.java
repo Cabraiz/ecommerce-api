@@ -20,4 +20,8 @@ public class TamanhoVariacao {
 
     @Column(name = "variacao_id")
     private Long variacaoId;
+
+    @ManyToOne
+    @JoinColumn(name = "variacao_id", insertable = false, updatable = false)
+    private VariacaoProduto variacao;
 }

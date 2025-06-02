@@ -7,4 +7,5 @@ public class ReduzirEstoqueDTO {
     private Long variacaoId;
     private String tamanho;
     private int quantidade;
+    private Long usuarioId;
 }

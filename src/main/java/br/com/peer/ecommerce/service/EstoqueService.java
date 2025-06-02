@@ -44,4 +44,15 @@ public class EstoqueService {
             return false;
         }
     }
+
+    public Long obterTamanhoId(Long variacaoId, String tamanho) {
+        try {
+            return jdbcTemplate.queryForObject("""
+                SELECT id FROM tamanhos_variacao
+                WHERE variacao_id = ? AND tamanho = ?
+            """, Long.class, variacaoId, tamanho);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Tamanho não encontrado para essa variação.");
+        }
+    }
 }
