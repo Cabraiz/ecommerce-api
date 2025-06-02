@@ -35,6 +35,10 @@ public class EstoqueController {
 
         for (ReduzirEstoqueDTO dto : pedidos) {
             Long tamanhoId = estoqueService.obterTamanhoId(dto.getVariacaoId(), dto.getTamanho());
+
+            // ❌ Não reduza aqui!
+            // estoqueService.reduzirEstoque(dto.getVariacaoId(), dto.getTamanho(), dto.getQuantidade());
+
             itens.add(new ItemRetiradaDTO(tamanhoId, dto.getQuantidade()));
         }
 
@@ -47,4 +51,5 @@ public class EstoqueController {
 
         return ResponseEntity.ok("Todos os estoques foram reduzidos e vinculados ao usuário.");
     }
+
 }
