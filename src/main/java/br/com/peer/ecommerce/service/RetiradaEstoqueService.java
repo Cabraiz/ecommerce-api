@@ -1,9 +1,6 @@
 package br.com.peer.ecommerce.service;
 
-import br.com.peer.ecommerce.dto.ItemRetiradaDTO;
-import br.com.peer.ecommerce.dto.ItemRetiradaResponse;
-import br.com.peer.ecommerce.dto.NovaRetiradaRequest;
-import br.com.peer.ecommerce.dto.RetiradaEstoqueResponse;
+import br.com.peer.ecommerce.dto.*;
 import br.com.peer.ecommerce.model.*;
 import br.com.peer.ecommerce.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -69,9 +66,10 @@ public class RetiradaEstoqueService {
 
             List<ItemRetiradaResponse> itens = retirada.getItens().stream().map(item -> {
                 ItemRetiradaResponse dto = new ItemRetiradaResponse();
-                dto.setTamanhoId(item.getTamanho().getId());
+                VariacaoProduto variacao = item.getTamanho().getVariacao();
+                dto.setProdutoId(variacao.getProduto().getId());
                 dto.setTamanho(item.getTamanho().getTamanho());
-                dto.setCorProduto(item.getTamanho().getVariacao().getCor());
+                dto.setCorProduto(variacao.getCor());
                 dto.setQuantidade(item.getQuantidade());
                 return dto;
             }).collect(Collectors.toList());
@@ -79,5 +77,29 @@ public class RetiradaEstoqueService {
             resp.setItens(itens);
             return resp;
         }).collect(Collectors.toList());
+    }
+
+    public List<ProdutoRetiradoResponse> listarProdutosRetiradosPorUsuario(Long usuarioId) {
+        List<RetiradaEstoque> retiradas = retiradaRepository.findByUsuarioId(usuarioId);
+
+        return retiradas.stream()
+                .flatMap(retirada -> retirada.getItens().stream().map(item -> {
+                    ProdutoRetiradoResponse dto = new ProdutoRetiradoResponse();
+                    dto.setDataRetirada(retirada.getDataRetirada());
+                    dto.setObservacao(retirada.getObservacao());
+                    dto.setQuantidade(item.getQuantidade());
+
+                    TamanhoVariacao tamanho = item.getTamanho();
+                    dto.setTamanho(tamanho.getTamanho());
+
+                    VariacaoProduto variacao = tamanho.getVariacao();
+                    dto.setCor(variacao.getCor());
+
+                    Produto produto = variacao.getProduto();
+                    dto.setNomeProduto(produto.getNome());
+
+                    return dto;
+                }))
+                .collect(Collectors.toList());
     }
 }

@@ -18,4 +18,8 @@ public class VariacaoProduto {
 
     @Column(name = "produto_id")
     private Long produtoId;
+
+    @ManyToOne
+    @JoinColumn(name = "produto_id", insertable = false, updatable = false)
+    private Produto produto;
 }
