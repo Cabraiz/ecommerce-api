@@ -23,7 +23,6 @@ public class UsuarioService {
     }
 
     public Usuario salvar(Usuario usuario) {
-        // Criptografa a senha antes de salvar
         usuario.setSenhaHash(encoder.encode(usuario.getSenhaHash()));
         return repository.save(usuario);
     }
@@ -32,9 +31,17 @@ public class UsuarioService {
         repository.deleteById(id);
     }
 
-    // Novo método de autenticação simples (sem JWT)
     public boolean autenticar(String email, String senha) {
         Optional<Usuario> opt = repository.findByEmail(email);
         return opt.isPresent() && encoder.matches(senha, opt.get().getSenhaHash());
     }
+
+    public Usuario buscarPorEmailESenha(String email, String senha) {
+        Optional<Usuario> opt = repository.findByEmail(email);
+        if (opt.isPresent() && encoder.matches(senha, opt.get().getSenhaHash())) {
+            return opt.get();
+        }
+        return null; // ou lançar exceção, se preferir
+    }
 }
+

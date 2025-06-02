@@ -71,6 +71,9 @@ public class RetiradaEstoqueService {
                 dto.setTamanho(item.getTamanho().getTamanho());
                 dto.setCorProduto(variacao.getCor());
                 dto.setQuantidade(item.getQuantidade());
+
+                dto.setStatus(item.getStatus());
+
                 return dto;
             }).collect(Collectors.toList());
 

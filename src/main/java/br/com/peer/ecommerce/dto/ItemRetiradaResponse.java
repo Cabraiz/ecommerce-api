@@ -8,4 +8,5 @@ public class ItemRetiradaResponse {
     private String tamanho;
     private String corProduto;
     private int quantidade;
+    private String status;
 }

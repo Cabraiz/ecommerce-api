@@ -25,4 +25,7 @@ public class ItemRetiradaEstoque {
 
     @Column(nullable = false)
     private Integer quantidade;
+
+    @Column(name = "status")
+    private String status;
 }
