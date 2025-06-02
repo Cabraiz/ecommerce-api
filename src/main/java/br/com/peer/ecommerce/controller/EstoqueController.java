@@ -34,18 +34,7 @@ public class EstoqueController {
         List<ItemRetiradaDTO> itens = new ArrayList<>();
 
         for (ReduzirEstoqueDTO dto : pedidos) {
-            boolean sucesso = estoqueService.reduzirEstoque(
-                    dto.getVariacaoId(), dto.getTamanho(), dto.getQuantidade());
-
-            if (!sucesso) {
-                return ResponseEntity
-                        .badRequest()
-                        .body("Erro ao reduzir estoque da variação ID "
-                                + dto.getVariacaoId() + ", tamanho " + dto.getTamanho());
-            }
-
             Long tamanhoId = estoqueService.obterTamanhoId(dto.getVariacaoId(), dto.getTamanho());
-
             itens.add(new ItemRetiradaDTO(tamanhoId, dto.getQuantidade()));
         }
 
